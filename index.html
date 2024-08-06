@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conversor de Moeda</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 <body>
     <div class="container">
@@ -16,36 +17,150 @@
             </div>
             <div class="input-group">
                 <label for="base-currency">Moeda Base:</label>
-                <select id="base-currency">
-                    <option value="USD">Dólar (USD)</option>
-                    <option value="EUR">Euro (EUR)</option>
-                    <option value="BRL">Real (BRL)</option>
-                    <option value="GBP">Libra Esterlina (GBP)</option>
-                    <option value="JPY">Yen Japonês (JPY)</option>
-                    <option value="AUD">Dólar Australiano (AUD)</option>
-                    <option value="CAD">Dólar Canadense (CAD)</option>
-                    <option value="CHF">Franco Suíço (CHF)</option>
-                    <!-- Adicione mais moedas conforme necessário -->
-                </select>
+                <select id="base-currency"></select>
             </div>
             <div class="input-group">
                 <label for="target-currency">Moeda Alvo:</label>
-                <select id="target-currency">
-                    <option value="USD">Dólar (USD)</option>
-                    <option value="EUR">Euro (EUR)</option>
-                    <option value="BRL">Real (BRL)</option>
-                    <option value="GBP">Libra Esterlina (GBP)</option>
-                    <option value="JPY">Yen Japonês (JPY)</option>
-                    <option value="AUD">Dólar Australiano (AUD)</option>
-                    <option value="CAD">Dólar Canadense (CAD)</option>
-                    <option value="CHF">Franco Suíço (CHF)</option>
-                    <!-- Adicione mais moedas conforme necessário -->
-                </select>
+                <select id="target-currency"></select>
             </div>
             <button type="submit">Converter</button>
         </form>
         <div id="result"></div>
     </div>
-    <script src="script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const baseCurrencySelect = document.getElementById('base-currency');
+            const targetCurrencySelect = document.getElementById('target-currency');
+            const resultDiv = document.getElementById('result');
+           
+            const currencies = [
+                { code: 'AED', name: 'Dirham Árabe (AED)' },
+                { code: 'ANG', name: 'Florin das Antilhas (ANG)' },
+                { code: 'AWG', name: 'Florim Arubano (AWG)' },
+                { code: 'AZN', name: 'Manat Azeri (AZN)' },
+                { code: 'BAM', name: 'Marca Conversível (BAM)' },
+                { code: 'BBD', name: 'Dólar de Barbados (BBD)' },
+                { code: 'BDT', name: 'Taka de Bangladesh (BDT)' },
+                { code: 'BGN', name: 'Lev Búlgaro (BGN)' },
+                { code: 'BHD', name: 'Dinar Bahraini (BHD)' },
+                { code: 'BMD', name: 'Dólar Bermudiano (BMD)' },
+                { code: 'BND', name: 'Dólar Bruneano (BND)' },
+                { code: 'BSD', name: 'Dólar das Bahamas (BSD)' },
+                { code: 'BTN', name: 'Ngultrum Butanês (BTN)' },
+                { code: 'BZD', name: 'Dólar de Belize (BZD)' },
+                { code: 'CFA', name: 'Franco CFA (CFA)' },
+                { code: 'CUP', name: 'Peso Cubano (CUP)' },
+                { code: 'CVE', name: 'Escudo Cabo-Verdiano (CVE)' },
+                { code: 'DJF', name: 'Franco Djibutiano (DJF)' },
+                { code: 'DKK', name: 'Coroa Dinamarquesa (DKK)' },
+                { code: 'ERN', name: 'Nakfa Eritreu (ERN)' },
+                { code: 'EUR', name: 'Euro (EUR)' },
+                { code: 'FKP', name: 'Libra Falklandense (FKP)' },
+                { code: 'FOK', name: 'Coroa das Ilhas Faroe (FOK)' },
+                { code: 'GGP', name: 'Libra de Guernsey (GGP)' },
+                { code: 'GIP', name: 'Libra de Gibraltar (GIP)' },
+                { code: 'HKD', name: 'Dólar de Hong Kong (HKD)' },
+                { code: 'IMP', name: 'Libra da Ilha de Man (IMP)' },
+                { code: 'JEP', name: 'Libra de Jersey (JEP)' },
+                { code: 'JOD', name: 'Dinar Jordaniano (JOD)' },
+                { code: 'KID', name: 'Dólar Kiribatiano (KID)' },
+                { code: 'KMF', name: 'Franco Comoriano (KMF)' },
+                { code: 'KWD', name: 'Dinar Kuwaitiano (KWD)' },
+                { code: 'KYD', name: 'Dólar Caimão (KYD)' },
+                { code: 'LBP', name: 'Libra Libanesa (LBP)' },
+                { code: 'LSL', name: 'Loti Lesotho (LSL)' },
+                { code: 'MOP', name: 'Pataca de Macau (MOP)' },
+                { code: 'NAD', name: 'Dólar Namibiano (NAD)' },
+                { code: 'NPR', name: 'Rúpia Nepalese (NPR)' },
+                { code: 'OMR', name: 'Rial de Omã (OMR)' },
+                { code: 'PAB', name: 'Balboa Panamenho (PAB)' },
+                { code: 'QAR', name: 'Rial do Qatar (QAR)' },
+                { code: 'SAR', name: 'Rial Saudita (SAR)' },
+                { code: 'SHP', name: 'Libra de Santa Helena (SHP)' },
+                { code: 'SSP', name: 'Libra do Sudão do Sul (SSP)' },
+                { code: 'STD', name: 'Dobra São-Tomense (STD)' },
+                { code: 'SZL', name: 'Lilangeni Suazi (SZL)' },
+                { code: 'TMT', name: 'Manat Turcomeno (TMT)' },
+                { code: 'TVD', name: 'Dólar de Tuvalu (TVD)' },
+                { code: 'TZS', name: 'Xelim Tanzaniano (TZS)' },
+                { code: 'UAH', name: 'Hryvnia Ucraniana (UAH)' },
+                { code: 'UGX', name: 'Xelim Ugandense (UGX)' },
+                { code: 'USD', name: 'Dólar Americano (USD)' },
+                { code: 'UYU', name: 'Peso Uruguaio (UYU)' },
+                { code: 'UZS', name: 'Som Uzbeque (UZS)' },
+                { code: 'VES', name: 'Bolívar Soberano (VES)' },
+                { code: 'VND', name: 'Dong Vietnamita (VND)' },
+                { code: 'VUV', name: 'Vatu Vanuatuense (VUV)' },
+                { code: 'WST', name: 'Tala Samoano (WST)' },
+                { code: 'XAF', name: 'Franco CFA da África Central (XAF)' },
+                { code: 'XAG', name: 'Prata (XAG)' },
+                { code: 'XAU', name: 'Ouro (XAU)' },
+                { code: 'XCD', name: 'Dólar do Caribe Oriental (XCD)' },
+                { code: 'XDR', name: 'Direitos Especiais de Saque (XDR)' },
+                { code: 'XOF', name: 'Franco CFA da África Ocidental (XOF)' },
+                { code: 'XPF', name: 'Franco do Pacífico (XPF)' },
+                { code: 'YER', name: 'Rial Iemenita (YER)' },
+                { code: 'ZAR', name: 'Rand Sul-Africano (ZAR)' },
+                { code: 'ZMW', name: 'Kwacha Zambiano (ZMW)' },
+                { code: 'ZWL', name: 'Dólar Zimbabuano (ZWL)' }
+            ];
+
+            function populateSelect(selectElement) {
+                selectElement.innerHTML = '';
+                currencies.forEach(currency => {
+                    const option = document.createElement('option');
+                    option.value = currency.code;
+                    option.textContent = `${currency.name}`;
+                    selectElement.appendChild(option);
+                });
+            }
+
+            populateSelect(baseCurrencySelect);
+            populateSelect(targetCurrencySelect);
+
+            $(baseCurrencySelect).select2();
+            $(targetCurrencySelect).select2();
+
+            async function fetchExchangeRates() {
+                try {
+                    const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD'); // Substitua pela URL da sua API
+                    const data = await response.json();
+                    return data.rates;
+                } catch (error) {
+                    console.error('Erro ao buscar taxas de câmbio:', error);
+                    return {};
+                }
+            }
+
+            async function convertCurrency(amount, baseCurrency, targetCurrency) {
+                const rates = await fetchExchangeRates();
+                if (baseCurrency === targetCurrency) {
+                    return amount;
+                }
+                const rate = rates[targetCurrency] / rates[baseCurrency];
+                return amount * rate;
+            }
+
+            document.getElementById('converter-form').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const amount = parseFloat(document.getElementById('base-amount').value);
+                const baseCurrency = baseCurrencySelect.value;
+                const targetCurrency = targetCurrencySelect.value;
+
+                const convertedAmount = await convertCurrency(amount, baseCurrency, targetCurrency);
+                resultDiv.textContent = `${amount} ${baseCurrency} é igual a ${convertedAmount.toFixed(2)} ${targetCurrency}`;
+            });
+
+            function updateRates() {
+                fetchExchangeRates().then(rates => {
+                    console.log('Taxas de câmbio atualizadas:', rates);
+                });
+            }
+
+            setInterval(updateRates, 300000); // Atualiza a cada 5 minutos
+        });
+    </script>
 </body>
 </html>
